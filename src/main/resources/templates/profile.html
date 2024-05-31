@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">BLENDER SHOP</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link fw-bold" href="/profile" th:text="${user.getUsername()}">No username found</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAnonymous()">
+                            <a class="nav-link" href="/login">Sign In</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAnonymous()">
+                            <a class="nav-link" href="/register">Sign Up</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" href="/cart">Cart</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <div th:if="${param.wrongOldPassword}" th:text="${errorMessage}" style="color: red;"></div>
+        <div th:if="${param.passwordsNotSame}" th:text="${errorMessage}" style="color: red;"></div>
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${user.getFirstName()} + ' ' + ${user.getLastName()}"></h5>
+                <p class="card-text" th:text="'Username: ' + ${user.getUsername()}"></p>
+                <p class="card-text" th:text="'Birthdate: ' + ${user.getBirthdate()}"></p>
+            </div>
+        </div>
+
+        <!-- Кнопка апдейта профиля -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal">
+            Update
+        </button>
+
+        <!-- Кнопка смены пароля -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePassModal">
+            Change Password
+        </button>
+
+        <!-- Модальное окно апдейта профиля -->
+        <form action="/profile/update" method="post">
+            <div class="modal fade" id="updateModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">First Name</label>
+                                <input name="firstName" th:value="${user.getFirstName()}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input name="lastName" th:value="${user.getLastName()}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Birthdate</label>
+                                <input type="date" name="birthdate" th:value="${user.getBirthdate()}">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form action="/profile/change-pass" method="post">
+            <!-- Modal -->
+            <div class="modal fade" id="changePassModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Modal title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Old Password</label>
+                                <input name="oldPassword">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password</label>
+                                <input name="newPassword">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Repeat New Password</label>
+                                <input name="reNewPassword">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+</body>
+</html>
