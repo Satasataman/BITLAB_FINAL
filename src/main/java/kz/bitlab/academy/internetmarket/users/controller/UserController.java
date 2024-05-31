@@ -16,17 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserController {
 
     private final UserService userService;
-    //ошибка не пропадает при смене пароля
-    @GetMapping("/profile")
-    public String profilePage(@RequestParam(value = "wrongOldPassword", required = false) String wrongOldPassword,
-                              @RequestParam(value = "passwordsNotSame", required = false) String passwordsNotSame,
-                              Model model) {
 
-        if (wrongOldPassword != null) {
-            model.addAttribute("errorMessage", "You entered wrong old password.");
-        } else if (passwordsNotSame != null) {
-            model.addAttribute("errorMessage", "New passwords are not the same");
-        }
+    @GetMapping("/profile")
+    public String profilePage(Model model) {
 
         model.addAttribute("user", userService.getCurrentUser());
 

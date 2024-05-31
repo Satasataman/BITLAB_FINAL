@@ -39,6 +39,10 @@
     </header>
 
     <main class="container border border-primary rounded p-3" style="width: 600px">
+
+        <div th:if="${param.alreadyExists}" style="color: red;">This username is already taken.</div>
+        <div th:if="${param.passwordsNotSame}" style="color: red;">Entered passwords are not the same.</div>
+
         <h3 style="margin-top: 20px;">
             Registration form
         </h3>

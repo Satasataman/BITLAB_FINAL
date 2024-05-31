@@ -33,9 +33,12 @@ public class UserServiceImpl implements UserService {
         var response = validateUserCreation(input);
         var entity = UserMapper.INSTANCE.toEntity(input);
 
+        if (response == null) {
 
-        entity.setPassword(passwordEncoder.encode(input.getPassword()));
-        repository.save(entity);
+            entity.setPassword(passwordEncoder.encode(input.getPassword()));
+            repository.save(entity);
+            return "redirect:/login";
+        }
 
         return response;
     }
@@ -52,6 +55,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public UserEntity getCurrentUser() {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserEntity) {
             return (UserEntity) authentication.getPrincipal();
@@ -68,6 +72,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public String changePassword(UserChangePassword input) {
+
         var entity = getCurrentUser();
         var response = validateUserChangePass(entity.getPassword(), input);
 
@@ -90,11 +95,13 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         return repository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User not found: " + username));
     }
 
     private UserEntity getEntityByUsername(String username) {
+
         return repository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User not found: " + username));
     }
@@ -102,12 +109,12 @@ public class UserServiceImpl implements UserService {
     private String validateUserCreation(UserCreate input) {
 
         if (repository.existsByUsername(input.getUsername()))
-            return "redirect:/signUp?alreadyExists";
+            return "redirect:/register?alreadyExists";
 
         if (!input.getPassword().equals(input.getRePassword()))
-            return "redirect:/signUp?passwordsNotSame";
+            return "redirect:/register?passwordsNotSame";
 
-        return "redirect:/login";
+        return null;
     }
 
     private String validateUserChangePass(String oldPassword, UserChangePassword input) {
